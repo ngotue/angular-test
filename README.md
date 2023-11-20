@@ -2,9 +2,9 @@
 
 This project was a technical test for Papernest
 
-## Running unit tests
+## Documentation
 
-To see the **Documentation** of this project, run `npm test` to execute the unit tests
+To see the documentation of this project, run `npm test` to execute the **unit tests**
 
 ## Development server
 
