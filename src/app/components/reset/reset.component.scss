@@ -1,0 +1,22 @@
+.reset-form {
+    text-align: center;
+    font-size: 3rem;
+}
+
+input.ng-invalid.ng-touched{
+    border: 1px solid red;
+}
+
+input.ng-invalid.ng-touched + span{
+    color: red;
+    font-size: 1rem;
+}
+
+.alert.alert-warning {
+    margin-top: 1rem;
+    font-size: 1rem;
+}
+
+button {
+    margin-top: 1rem;
+}

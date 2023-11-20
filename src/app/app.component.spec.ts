@@ -1,29 +1,52 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
+import { BackgroundChangerDirective } from './directives/background-changer.directive';
+import { CounterService } from './services/counter.service';
+import { Subject, Subscription } from 'rxjs';
+import { HeaderComponent } from './components/header/header.component';
 
 describe('AppComponent', () => {
-  beforeEach(() => TestBed.configureTestingModule({
-    imports: [RouterTestingModule],
-    declarations: [AppComponent]
-  }));
+  let fixture: ComponentFixture<AppComponent>,
+    app: AppComponent,
+    service: CounterService;
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [RouterTestingModule],
+      declarations: [AppComponent, BackgroundChangerDirective, HeaderComponent],
+      providers: [{ provide: CounterService, useClass: CounterServiceMock }],
+    }).compileComponents();
+    fixture = TestBed.createComponent(AppComponent);
+    app = fixture.componentInstance;
+    service = TestBed.inject(CounterService);
+    spyOn(service, 'loadCount');
+    spyOn(service.countSubject, 'subscribe');
+    fixture.detectChanges();
+  });
 
   it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'angular-test'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('angular-test');
+  it('should call loadCount from counterService', () => {
+    expect(service.loadCount).toHaveBeenCalled();
   });
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('angular-test app is running!');
+  it('should call subscribe from counterService.countSubject', () => {
+    expect(service.countSubject.subscribe).toHaveBeenCalled();
+  });
+
+  describe('when app destroy', () => {
+    it('should call unsubscribe on count subscription', () => {
+      app.countSub = new Subscription();
+      spyOn(app.countSub, 'unsubscribe');
+      app.ngOnDestroy();
+      expect(app.countSub.unsubscribe).toHaveBeenCalled();
+    });
   });
 });
+
+class CounterServiceMock {
+  loadCount() {}
+  countSubject = new Subject<number>();
+}
